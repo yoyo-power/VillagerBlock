@@ -1,0 +1,8 @@
+TODO:
+
+- fix spamming log (lava, fire)
+- add option for logging all villagers deaths
+- add option for disable TNT damage
+- add option for disable creeper damage
+- fix /vreload command
+- add this to bukkit-dev
