@@ -1,11 +1,13 @@
 package me.NetFire.TesCZ.VillagerBlock;
 
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Zombie;
 
@@ -16,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.ChatColor;
 
@@ -24,6 +27,14 @@ public class events implements Listener {
   
   public events(main instance) {
     this.plugin = instance;
+  }
+
+  @EventHandler(priority = EventPriority.HIGH)
+  public void onEntityDeath(EntityDeathEvent event) {
+    if(plugin.log_deaths && (event.getEntity() instanceof Villager)){
+    	Entity ent=event.getEntity();
+    	plugin.loguj("Villager died on (" + Math.round(ent.getLocation().getX()) + "; "+ Math.round(ent.getLocation().getY()) + "; "+ Math.round(ent.getLocation().getZ()) + "; " + ent.getWorld().getName() + ")");
+    }
   }
   
   @EventHandler(priority = EventPriority.HIGH)
@@ -46,6 +57,15 @@ public class events implements Listener {
 	  }
 	  if(plugin.block_fire && !plugin.regions_use && (target instanceof Villager) && type == DamageCause.FALL){
 		 if(plugin.clog) plugin.loguj("Villager tried to fall on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+		 ev.setCancelled(true);
+	  }
+	  // drowing
+	  if(plugin.block_drowing && plugin.regions_use && plugin.isProtect(target) && (target instanceof Villager) && type == DamageCause.DROWNING  ){
+		 if(plugin.clog) plugin.loguj("Villager tried to drow in region on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+		 ev.setCancelled(true);
+	  }
+	  if(plugin.block_drowing && !plugin.regions_use && (target instanceof Villager) && type == DamageCause.DROWNING ){
+		 if(plugin.clog) plugin.loguj("Villager tried to drow on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
 		 ev.setCancelled(true);
 	  }
   }
@@ -78,8 +98,8 @@ public class events implements Listener {
 		 if(plugin.clog) plugin.loguj("Lava tried to hit villager on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
 		 ev.setCancelled(true);
 	  }     
-  }
-	  
+  }  
+  
   @EventHandler(priority=EventPriority.HIGH)
   public void EntityDamageByEntityEvent(EntityDamageByEntityEvent ev) {
 	Entity player=ev.getDamager();
@@ -87,13 +107,14 @@ public class events implements Listener {
 	if(plugin.block_attack && (player instanceof Player) && !(target instanceof Player)){
 	  if(target instanceof Villager){
 		Player p=(Player) player;
-		if(!p.isOp() && !p.hasPermission("villagerblock.cankill") && plugin.regions_use && !plugin.canPlayerBuild(p, target)){
+		if(!p.isOp() && !p.hasPermission("villagerblock.cankill") && !p.isOp() && plugin.regions_use && !plugin.canPlayerBuild(p, target)){
 		  p.sendMessage(ChatColor.DARK_RED + plugin.message_cantkill);
 		  if(plugin.clog) plugin.loguj(p.getName() + " tried to hit villager in region on (player pos: " + Math.round(p.getLocation().getX()) + "; "+ Math.round(p.getLocation().getY()) + "; "+ Math.round(p.getLocation().getZ()) + "; " + p.getWorld().getName() + "), (villager pos: " + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
 		  ev.setCancelled(true);
 		}
-		if(!plugin.regions_use){
+		if(!plugin.regions_use && !p.hasPermission("villagerblock.cankill") && !p.isOp()){
 			if(plugin.clog) plugin.loguj(p.getName() + " tried to hit villager on (player pos: " + Math.round(p.getLocation().getX()) + "; "+ Math.round(p.getLocation().getY()) + "; "+ Math.round(p.getLocation().getZ()) + "; " + p.getWorld().getName() + "), (villager pos: " + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+			p.sendMessage(ChatColor.DARK_RED + plugin.message_cantkill_all);
 			ev.setCancelled(true);
 		}
 	  }
@@ -146,5 +167,29 @@ public class events implements Listener {
 			}	
 		}
 	}
+	if(plugin.block_tnt && (player instanceof TNTPrimed) && !(target instanceof Player)){
+		if(target instanceof Villager){
+			if(plugin.regions_use && plugin.isProtect(target)){
+				if(plugin.clog) plugin.loguj("TNT tried to damage villager in region on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+				ev.setCancelled(true);
+			}
+			if(!plugin.regions_use){
+				if(plugin.clog) plugin.loguj("TNT tried to damage villager on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+				ev.setCancelled(true);
+			}	
+		}
+	}	
+	if(plugin.block_creeper && (player instanceof Creeper) && !(target instanceof Player)){
+		if(target instanceof Villager){
+			if(plugin.regions_use && plugin.isProtect(target)){
+				if(plugin.clog) plugin.loguj("Creeper tried to damage villager in region on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+				ev.setCancelled(true);
+			}
+			if(!plugin.regions_use){
+				if(plugin.clog) plugin.loguj("Creeper tried to damage villager on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+				ev.setCancelled(true);
+			}	
+		}
+	}	
   } 
 }
