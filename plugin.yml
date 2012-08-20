@@ -1,7 +1,8 @@
 name: VillagerBlock
 main: me.NetFire.TesCZ.VillagerBlock.main
 author: TesCZ
-version: 1.1
+version: 1.2
+softdepend: [Residence, WorldGuard, WorldEdit]
 commands:
    vreload:
       description: Reload config of this plugin
