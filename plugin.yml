@@ -1,0 +1,7 @@
+name: VillagerBlock
+main: me.NetFire.TesCZ.VillagerBlock.main
+author: TesCZ
+version: 1.0
+permissions:
+   villagerblock.cankill:
+     description: blablabla
