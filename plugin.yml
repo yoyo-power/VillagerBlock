@@ -1,6 +1,7 @@
 name: VillagerBlock
 main: me.NetFire.TesCZ.VillagerBlock.main
 author: TesCZ
+softdepend: WorldGuard
 version: 1.0
 permissions:
    villagerblock.cankill:
