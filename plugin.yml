@@ -1,8 +1,12 @@
 name: VillagerBlock
 main: me.NetFire.TesCZ.VillagerBlock.main
 author: TesCZ
-softdepend: WorldGuard
-version: 1.0
+version: 1.1
+commands:
+   vreload:
+      description: Reload config of this plugin
 permissions:
    villagerblock.cankill:
-     description: blablabla
+     description: can kill villager
+   villagerblock.reload:
+     description: reload config
