@@ -1,5 +1,8 @@
 package me.NetFire.TesCZ.VillagerBlock;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Egg;
@@ -23,8 +26,12 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.ChatColor;
 
 public class events implements Listener {
+	
   private final main plugin;
-  
+  private Map<Integer, Integer> count_fire = new HashMap<Integer, Integer>();
+  private Map<Integer, Integer> count_lava = new HashMap<Integer, Integer>();
+  private Map<Integer, Integer> count_drown = new HashMap<Integer, Integer>();
+		  
   public events(main instance) {
     this.plugin = instance;
   }
@@ -43,11 +50,27 @@ public class events implements Listener {
 	  DamageCause type=ev.getCause();
 	  // fire
 	  if(plugin.block_fire && plugin.regions_use && plugin.isProtect(target) && (target instanceof Villager) && (type == DamageCause.FIRE || type == DamageCause.FIRE_TICK)){
-		 if(plugin.clog) plugin.loguj("Some fire tried to hit villager in region on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+		 if(plugin.clog){
+			 if(count_fire.get(target.getEntityId())==null) count_fire.put(target.getEntityId(), 0);
+			 if(count_fire.get(target.getEntityId()) >= 200 || count_fire.get(target.getEntityId())==0){
+				 count_fire.put(target.getEntityId(), 1);
+				 plugin.loguj("Some fire tried to hit villager in region on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+			 }else{
+				 count_fire.put(target.getEntityId(), count_fire.get(target.getEntityId())+1);
+			 }
+		 }
 		 ev.setCancelled(true);
 	  }
 	  if(plugin.block_fire && !plugin.regions_use && (target instanceof Villager) && (type == DamageCause.FIRE || type == DamageCause.FIRE_TICK)){
-		 if(plugin.clog) plugin.loguj("Some fire tried to hit villager on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+		 if(plugin.clog){
+			 if(count_fire.get(target.getEntityId())==null) count_fire.put(target.getEntityId(), 0);
+			 if(count_fire.get(target.getEntityId()) >= 200 || count_fire.get(target.getEntityId())==0){
+				 count_fire.put(target.getEntityId(), 1);		 
+				 plugin.loguj("Some fire tried to hit villager on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+			 }else{
+				 count_fire.put(target.getEntityId(), count_fire.get(target.getEntityId())+1);
+			 }		 
+		 }
 		 ev.setCancelled(true);
 	  }
 	  // fall
@@ -60,12 +83,28 @@ public class events implements Listener {
 		 ev.setCancelled(true);
 	  }
 	  // drowing
-	  if(plugin.block_drowing && plugin.regions_use && plugin.isProtect(target) && (target instanceof Villager) && type == DamageCause.DROWNING  ){
-		 if(plugin.clog) plugin.loguj("Villager tried to drow in region on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+	  if(plugin.block_drowning && plugin.regions_use && plugin.isProtect(target) && (target instanceof Villager) && type == DamageCause.DROWNING  ){
+		 if(plugin.clog){
+			 if(count_drown.get(target.getEntityId())==null) count_drown.put(target.getEntityId(), 0);
+			 if(count_drown.get(target.getEntityId()) >= 80 || count_drown.get(target.getEntityId())==0){
+				 count_drown.put(target.getEntityId(), 1);			 
+				 plugin.loguj("Villager tried to drown in region on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+			 }else{
+				 count_drown.put(target.getEntityId(), count_drown.get(target.getEntityId())+1);
+			 }		
+		 }
 		 ev.setCancelled(true);
 	  }
-	  if(plugin.block_drowing && !plugin.regions_use && (target instanceof Villager) && type == DamageCause.DROWNING ){
-		 if(plugin.clog) plugin.loguj("Villager tried to drow on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+	  if(plugin.block_drowning && !plugin.regions_use && (target instanceof Villager) && type == DamageCause.DROWNING ){
+		 if(plugin.clog){
+			 if(count_drown.get(target.getEntityId())==null) count_drown.put(target.getEntityId(), 0);
+			 if(count_drown.get(target.getEntityId()) >= 80 || count_drown.get(target.getEntityId())==0){
+				 count_drown.put(target.getEntityId(), 1);			 
+				 plugin.loguj("Villager tried to drown on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+			 }else{
+				 count_drown.put(target.getEntityId(), count_drown.get(target.getEntityId())+1);
+			 }
+		 }
 		 ev.setCancelled(true);
 	  }
   }
@@ -91,11 +130,27 @@ public class events implements Listener {
       Entity target = ev.getEntity();
       DamageCause type = ev.getCause();
 	  if(plugin.block_lava && plugin.regions_use && plugin.isProtect(target) && (target instanceof Villager) && type == DamageCause.LAVA ){
-		 if(plugin.clog) plugin.loguj("Lava tried to hit villager in region on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+		 if(plugin.clog){
+			 if(count_lava.get(target.getEntityId())==null) count_lava.put(target.getEntityId(), 0);
+			 if(count_lava.get(target.getEntityId()) >= 200 || count_lava.get(target.getEntityId())==0){
+				 count_lava.put(target.getEntityId(), 1);		 
+				 plugin.loguj("Lava tried to hit villager in region on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+			 }else{
+				 count_lava.put(target.getEntityId(), count_lava.get(target.getEntityId())+1);			 
+			 }
+		 }
 		 ev.setCancelled(true);
 	  }
 	  if(plugin.block_lava && !plugin.regions_use && (target instanceof Villager) && type == DamageCause.LAVA){
-		 if(plugin.clog) plugin.loguj("Lava tried to hit villager on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+		 if(plugin.clog){
+			 if(count_lava.get(target.getEntityId())==null) count_lava.put(target.getEntityId(), 0);
+			 if(count_lava.get(target.getEntityId()) >= 200 || count_lava.get(target.getEntityId())==0){
+				 count_lava.put(target.getEntityId(), 1);		 
+				 plugin.loguj("Lava tried to hit villager on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
+			 }else{
+				 count_lava.put(target.getEntityId(), count_lava.get(target.getEntityId())+1);			 
+			 }	
+		 }
 		 ev.setCancelled(true);
 	  }     
   }  
