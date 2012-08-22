@@ -37,7 +37,7 @@ public class main extends JavaPlugin {
 	public Boolean block_lava = true;
 	public Boolean block_egg = true;	
 	public Boolean block_tnt = true;
-	public Boolean block_drowing = true;
+	public Boolean block_drowning = true;
 	public Boolean block_creeper = true;
 	public String regions_plugin = "worldguard";
 	public String message_cantkill = "You don't have permissions for kill a villager.";
@@ -73,7 +73,7 @@ public class main extends JavaPlugin {
      getConfig().addDefault("block.lava", true);
      getConfig().addDefault("block.egg", true);
      getConfig().addDefault("block.tnt", true);
-     getConfig().addDefault("block.drowing", true);
+     getConfig().addDefault("block.drowning", true);
      getConfig().addDefault("block.creeper", true);
      getConfig().addDefault("messages.cantkill", "You don't have permissions for kill a villager.");
      getConfig().addDefault("messages.cantkill_all", "Killing villagers is disabled on this server.");
@@ -100,7 +100,7 @@ public class main extends JavaPlugin {
      block_lava=getConfig().getBoolean("block.lava");
      block_egg=getConfig().getBoolean("block.egg");   
      block_tnt=getConfig().getBoolean("block.tnt");
-     block_drowing=getConfig().getBoolean("block.drowing");    
+     block_drowning=getConfig().getBoolean("block.drowning");    
      block_creeper=getConfig().getBoolean("block.creeper");         
      message_cantkill=getConfig().getString("messages.cantkill");
      message_cantkill_all=getConfig().getString("messages.cantkill_all");
