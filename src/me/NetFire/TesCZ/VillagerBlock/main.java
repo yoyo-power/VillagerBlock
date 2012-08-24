@@ -76,8 +76,8 @@ public class main extends JavaPlugin {
      							     // intentional mistake
      getConfig().addDefault("block.drowning", getConfig().get("block.drowing", true)); // backward compatibility
      getConfig().addDefault("block.creeper", true);
-     getConfig().addDefault("messages.cantkill", "You don't have permissions for kill a villager.");
-     getConfig().addDefault("messages.cantkill_all", "Killing villagers is disabled on this server.");
+     getConfig().addDefault("messages.cantkill", message_cantkill);
+     getConfig().addDefault("messages.cantkill_all", message_cantkill_all);
      if(!getConfig().getString("regions.plugin").equalsIgnoreCase("worldguard") && !getConfig().getString("regions.plugin").equalsIgnoreCase("residence")){
     	 getConfig().set("regions.plugin", "worldguard");
     	 getConfig().set("regions.use", false);
