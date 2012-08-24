@@ -40,7 +40,7 @@ public class main extends JavaPlugin {
 	public Boolean block_drowning = true;
 	public Boolean block_creeper = true;
 	public String regions_plugin = "worldguard";
-	public String message_cantkill = "You don't have permissions for kill a villager.";
+	public String message_cantkill = "You don't have permissions to kill a villager.";
 	public String message_cantkill_all = "Killing villagers is disabled on this server.";
 	
 	public void loguj(String what){
