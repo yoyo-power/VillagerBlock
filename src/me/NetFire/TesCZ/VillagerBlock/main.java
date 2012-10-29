@@ -73,8 +73,7 @@ public class main extends JavaPlugin {
      getConfig().addDefault("block.lava", true);
      getConfig().addDefault("block.egg", true);
      getConfig().addDefault("block.tnt", true);
-     							     // intentional mistake
-     getConfig().addDefault("block.drowning", getConfig().get("block.drowing", true)); // backward compatibility
+     getConfig().addDefault("block.drowning", getConfig().get("block.drowing", true)); 
      getConfig().addDefault("block.creeper", true);
      getConfig().addDefault("messages.cantkill", message_cantkill);
      getConfig().addDefault("messages.cantkill_all", message_cantkill_all);
