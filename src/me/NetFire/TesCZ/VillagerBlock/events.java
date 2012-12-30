@@ -3,6 +3,7 @@ package me.NetFire.TesCZ.VillagerBlock;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Egg;
@@ -13,7 +14,6 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Zombie;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,7 +23,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.ChatColor;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class events implements Listener {
 	
@@ -35,6 +35,36 @@ public class events implements Listener {
   public events(main instance) {
     this.plugin = instance;
   }
+  
+  @EventHandler(priority = EventPriority.HIGH)
+  public void onPlayerInteractEntity(PlayerInteractEntityEvent e){
+  	if(plugin.block_trade){
+  		if ((e.getRightClicked() instanceof Villager)){
+		    	Player p=e.getPlayer();
+	    		if(plugin.block_trade_protect){
+	    			if(!plugin.canPlayerBuild(p, e.getRightClicked())){
+		    			if(plugin.clog){
+		    				plugin.loguj("Player "+p.getName()+" tried to trade with a villager in protect on ("+p.getLocation().getWorld().getName()+"; "+p.getLocation().getX()+"; "+p.getLocation().getY()+"; "+p.getLocation().getZ()+")");
+		    			}
+		    			p.sendMessage(ChatColor.RED + plugin.message_canttrade_protect);
+		    			e.setCancelled(true);	    				
+	    			}
+	    		}else{
+			    	if(p.isOp() || p.hasPermission("villagerblock.trade")){
+		    			if(plugin.clog){
+		    				plugin.loguj("Player "+p.getName()+" [perms/op] traded with a villager ("+p.getLocation().getWorld().getName()+"; "+p.getLocation().getX()+"; "+p.getLocation().getY()+"; "+p.getLocation().getZ()+")");
+		    			}    		
+			    	}else{
+		    			if(plugin.clog){
+		    				plugin.loguj("Player "+p.getName()+" tried to trade with a villager on ("+p.getLocation().getWorld().getName()+"; "+p.getLocation().getX()+"; "+p.getLocation().getY()+"; "+p.getLocation().getZ()+")");
+		    			}
+		    			p.sendMessage(ChatColor.RED + plugin.message_canttrade);
+		    			e.setCancelled(true);		
+			    	}
+	    		}
+	    	}
+	    }
+  } 
 
   @EventHandler(priority = EventPriority.HIGH)
   public void onEntityDeath(EntityDeathEvent event) {
@@ -74,11 +104,11 @@ public class events implements Listener {
 		 ev.setCancelled(true);
 	  }
 	  // fall
-	  if(plugin.block_fire && plugin.regions_use && plugin.isProtect(target) && (target instanceof Villager) && type == DamageCause.FALL ){
+	  if(plugin.block_fall && plugin.regions_use && plugin.isProtect(target) && (target instanceof Villager) && type == DamageCause.FALL ){
 		 if(plugin.clog) plugin.loguj("Villager tried to fall in region on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
 		 ev.setCancelled(true);
 	  }
-	  if(plugin.block_fire && !plugin.regions_use && (target instanceof Villager) && type == DamageCause.FALL){
+	  if(plugin.block_fall && !plugin.regions_use && (target instanceof Villager) && type == DamageCause.FALL){
 		 if(plugin.clog) plugin.loguj("Villager tried to fall on (" + Math.round(target.getLocation().getX()) + "; "+ Math.round(target.getLocation().getY()) + "; "+ Math.round(target.getLocation().getZ()) + "; " + target.getWorld().getName() + ")");
 		 ev.setCancelled(true);
 	  }
@@ -123,7 +153,7 @@ public class events implements Listener {
 			 }			  
 		  }
 	  }
-  }
+  }  
   
   @EventHandler(priority=EventPriority.HIGH)
   public void onEntityDamageByBlock(EntityDamageByBlockEvent ev) {
