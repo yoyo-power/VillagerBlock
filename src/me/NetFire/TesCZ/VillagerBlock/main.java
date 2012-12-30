@@ -1,5 +1,6 @@
 package me.NetFire.TesCZ.VillagerBlock;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -8,18 +9,16 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
-
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 
 public class main extends JavaPlugin {
 	public static Logger log = Logger.getLogger("Minecraft");
@@ -39,10 +38,14 @@ public class main extends JavaPlugin {
 	public Boolean block_tnt = true;
 	public Boolean block_drowning = true;
 	public Boolean block_creeper = true;
+	public Boolean block_trade = false;
+	public Boolean block_trade_protect = true;
 	public String regions_plugin = "worldguard";
 	public String message_cantkill = "You don't have permissions to kill a villager.";
 	public String message_cantkill_all = "Killing villagers is disabled on this server.";
-	
+	public String message_canttrade = "You can't trade with villagers..";
+	public String message_canttrade_protect = "You can't trade with villagers in this area!";
+
 	public void loguj(String what){
 		log.info("[VillagerBlock] " + what);
 	}
@@ -51,6 +54,13 @@ public class main extends JavaPlugin {
 	    pm.registerEvents(new events(this), this);
 	    config_load();
 		loguj("enabled.");
+		
+		try {
+		    Metrics metrics = new Metrics(this);
+		    metrics.start();
+		} catch (IOException e) {
+		   
+		}
 	}
 	public void onDisable(){
 		loguj("disabled.");
@@ -75,8 +85,12 @@ public class main extends JavaPlugin {
      getConfig().addDefault("block.tnt", true);
      getConfig().addDefault("block.drowning", getConfig().get("block.drowing", true)); 
      getConfig().addDefault("block.creeper", true);
+     getConfig().addDefault("trade_block.use", false);
+     getConfig().addDefault("trade_block.block_only_in_protects", true);
      getConfig().addDefault("messages.cantkill", message_cantkill);
      getConfig().addDefault("messages.cantkill_all", message_cantkill_all);
+     getConfig().addDefault("messages.canttrade", message_canttrade);
+     getConfig().addDefault("messages.canttrade_protect", message_canttrade_protect);
      if(!getConfig().getString("regions.plugin").equalsIgnoreCase("worldguard") && !getConfig().getString("regions.plugin").equalsIgnoreCase("residence")){
     	 getConfig().set("regions.plugin", "worldguard");
     	 getConfig().set("regions.use", false);
@@ -101,9 +115,14 @@ public class main extends JavaPlugin {
      block_egg=getConfig().getBoolean("block.egg");   
      block_tnt=getConfig().getBoolean("block.tnt");
      block_drowning=getConfig().getBoolean("block.drowning");    
-     block_creeper=getConfig().getBoolean("block.creeper");         
+     block_creeper=getConfig().getBoolean("block.creeper");   
+     block_trade=getConfig().getBoolean("trade_block.use");         
+     block_trade_protect=getConfig().getBoolean("trade_block.block_only_in_protects");         
      message_cantkill=getConfig().getString("messages.cantkill");
      message_cantkill_all=getConfig().getString("messages.cantkill_all");
+     message_canttrade=getConfig().getString("messages.canttrade");
+     message_canttrade_protect=getConfig().getString("messages.canttrade_protect");
+     if(!regions_use) block_trade_protect=false;
 
      PluginManager pm = getServer().getPluginManager();
      if(regions_use && regions_plugin.equalsIgnoreCase("worldguard")){
@@ -111,6 +130,7 @@ public class main extends JavaPlugin {
     	 if(p==null){
     		 log.warning("[VillagerBlock] WorldGuard plugin is not found on this server, disabling REGIONS_USE! But plugin is still running...");
         	 getConfig().set("regions.use", false);
+        	 block_trade_protect=false;
         	 regions_use=false;
         	 saveConfig();
     	 }
@@ -120,6 +140,7 @@ public class main extends JavaPlugin {
     	 if(p==null){
     		 log.warning("[VillagerBlock] Residence plugin is not found on this server, disabling REGIONS_USE! But plugin is still running...");
         	 getConfig().set("regions.use", false);
+        	 block_trade_protect=false;
         	 regions_use=false;
         	 saveConfig();
     	 }
