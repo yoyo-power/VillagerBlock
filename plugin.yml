@@ -1,7 +1,7 @@
 name: VillagerBlock
 main: me.NetFire.TesCZ.VillagerBlock.main
 author: TesCZ
-version: 1.3
+version: 1.5
 softdepend: [Residence, WorldGuard, WorldEdit]
 commands:
    vreload:
@@ -11,3 +11,5 @@ permissions:
      description: can kill villager
    villagerblock.reload:
      description: reload config
+   villagerblock.trade:
+     description: players can trade with villagers
