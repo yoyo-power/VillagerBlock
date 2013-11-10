@@ -41,10 +41,10 @@ public class main extends JavaPlugin {
 	public Boolean block_trade = false;
 	public Boolean block_trade_protect = true;
 	public String regions_plugin = "worldguard";
-	public String message_cantkill = "You don't have permissions to kill a villager.";
-	public String message_cantkill_all = "Killing villagers is disabled on this server.";
-	public String message_canttrade = "You can't trade with villagers..";
-	public String message_canttrade_protect = "You can't trade with villagers in this area!";
+	public String message_cantkill = "";
+	public String message_cantkill_all = "";
+	public String message_canttrade = "";
+	public String message_canttrade_protect = "";
 
 	public void loguj(String what){
 		log.info("[VillagerBlock] " + what);
